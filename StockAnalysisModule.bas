@@ -1,0 +1,144 @@
+Sub StockAnalysis()
+
+    Dim ws As Worksheet
+    Dim ticker As String
+    Dim totalVolume As Double
+    Dim openPrice As Double
+    Dim closePrice As Double
+    Dim yearlyChange As Double
+    Dim percentChange As Double
+    Dim lastRow As Long
+    Dim summaryRow As Integer
+    
+    ' loop worksheet
+    For Each ws In Worksheets
+        
+        summaryRow = 2
+        
+        ' headers for summary table
+        ws.Cells(1, 9).Value = "Ticker"
+        ws.Cells(1, 10).Value = "Yearly Change"
+        ws.Cells(1, 11).Value = "Percent Change"
+        ws.Cells(1, 12).Value = "Total Stock Volume"
+        
+        ' last row with data
+        lastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+        
+        ' initialize totalVolume
+        totalVolume = 0
+        
+        ' loop for perform calculations
+        For i = 2 To lastRow
+           
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+                
+                ticker = ws.Cells(i, 1).Value
+                
+               
+                totalVolume = totalVolume + ws.Cells(i, 7).Value
+                
+                
+                closePrice = ws.Cells(i, 6).Value
+                
+                ' calculate yearlyChange && percentChange
+                yearlyChange = closePrice - openPrice
+                
+                If openPrice <> 0 Then
+                    percentChange = (yearlyChange / openPrice)
+                Else
+                    percentChange = 0
+                End If
+                
+                ' output summary table
+                ws.Cells(summaryRow, 9).Value = ticker
+                ws.Cells(summaryRow, 10).Value = yearlyChange
+                ws.Cells(summaryRow, 11).Value = percentChange
+                ws.Cells(summaryRow, 12).Value = totalVolume
+                
+                ' apply colours to yearlyChange
+                If yearlyChange > 0 Then
+                    ws.Cells(summaryRow, 10).Interior.Color = RGB(0, 255, 0)  ' Green
+                ElseIf yearlyChange < 0 Then
+                    ws.Cells(summaryRow, 10).Interior.Color = RGB(255, 0, 0)  ' Red
+                Else
+                    ws.Cells(summaryRow, 10).Interior.Color = RGB(255, 255, 255)  ' White
+                End If
+                
+                ' reset variables for next ticker symbol
+                totalVolume = 0
+                summaryRow = summaryRow + 1
+                
+            Else
+                
+                totalVolume = totalVolume + ws.Cells(i, 7).Value
+                
+                ' set openPrice if null
+                If totalVolume = ws.Cells(i, 7).Value Then
+                    openPrice = ws.Cells(i, 3).Value
+                End If
+            End If
+        Next i
+
+        ' format the Percent Change with 2 decimal places
+        ws.Columns("K:K").NumberFormat = "0.00%"
+        
+    Next ws
+
+End Sub
+
+Sub GreatestValues()
+
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim greatestIncrease As Double
+    Dim greatestDecrease As Double
+    Dim greatestVolume As Double
+    Dim increaseTicker As String
+    Dim decreaseTicker As String
+    Dim volumeTicker As String
+    
+    For Each ws In Worksheets
+        
+        greatestIncrease = 0
+        greatestDecrease = 0
+        greatestVolume = 0
+        
+        
+        lastRow = ws.Cells(Rows.Count, 9).End(xlUp).Row
+        
+        ' loop to find greatest values
+        For i = 2 To lastRow
+            If ws.Cells(i, 11).Value > greatestIncrease Then
+                greatestIncrease = ws.Cells(i, 11).Value
+                increaseTicker = ws.Cells(i, 9).Value
+            End If
+            
+            If ws.Cells(i, 11).Value < greatestDecrease Then
+                greatestDecrease = ws.Cells(i, 11).Value
+                decreaseTicker = ws.Cells(i, 9).Value
+            End If
+            
+            If ws.Cells(i, 12).Value > greatestVolume Then
+                greatestVolume = ws.Cells(i, 12).Value
+                volumeTicker = ws.Cells(i, 9).Value
+            End If
+        Next i
+        
+        ' populate cells with text labels
+        ws.Cells(2, 15).Value = "Greatest % Increase"
+        ws.Cells(3, 15).Value = "Greatest % Decrease"
+        ws.Cells(4, 15).Value = "Greatest Total Volume"
+        ws.Cells(1, 16).Value = "Ticker"
+        ws.Cells(1, 17).Value = "Value"
+        
+        ' populate cells with greatest values
+        ws.Cells(2, 16).Value = increaseTicker
+        ws.Cells(3, 16).Value = decreaseTicker
+        ws.Cells(4, 16).Value = volumeTicker
+        ws.Cells(2, 17).Value = greatestIncrease
+        ws.Cells(3, 17).Value = greatestDecrease
+        ws.Cells(4, 17).Value = greatestVolume
+        
+    Next ws
+
+End Sub
