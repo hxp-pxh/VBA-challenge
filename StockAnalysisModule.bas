@@ -131,14 +131,15 @@ Sub GreatestValues()
         ws.Cells(1, 16).Value = "Ticker"
         ws.Cells(1, 17).Value = "Value"
         
-        ' populate cells with greatest values
-        ws.Cells(2, 16).Value = increaseTicker
-        ws.Cells(3, 16).Value = decreaseTicker
-        ws.Cells(4, 16).Value = volumeTicker
-        ws.Cells(2, 17).Value = greatestIncrease
-        ws.Cells(3, 17).Value = greatestDecrease
-        ws.Cells(4, 17).Value = greatestVolume
-        
+        ' populate cells with greatest values formatted to two decimal places
+	ws.Cells(2, 16).Value = increaseTicker
+	ws.Cells(3, 16).Value = decreaseTicker
+	ws.Cells(4, 16).Value = volumeTicker
+	ws.Cells(2, 17).Value = Format(greatestIncrease * 100, "0.00") & "%"
+	ws.Cells(3, 17).Value = Format(greatestDecrease * 100, "0.00") & "%"
+	ws.Cells(4, 17).Value = greatestVolume
+
+      
     Next ws
 
 End Sub
